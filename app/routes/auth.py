@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends,status
 from app.db.database import db,users_collection
 from app.db.schemas import UserCreate, UserLogin, UserResponse
 from app.core.security import hash_password, verify_password, create_access_token
@@ -40,7 +40,7 @@ def login_user(user: UserLogin):
         raise HTTPException(status_code=404, detail="User not found")
 
     if not verify_password(user.password, db_user["password"]):
-        raise HTTPException(status_code=401, detail="Incorrect password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
 
     token = create_access_token({"sub": str(db_user["_id"]), "role": db_user["role"]})
     return {"access_token": token, "token_type": "bearer"}
