@@ -7,3 +7,6 @@ python-multipart
 bcrypt
 python-jose[cryptography]
 requests
+passlib[bcrypt]
+python-dotenv
+#source /Users/shreyasg/Desktop/payment/env/bin/activate
