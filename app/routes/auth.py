@@ -4,7 +4,8 @@ from app.db.schemas import UserCreate, UserLogin, UserResponse
 from app.core.security import hash_password, verify_password, create_access_token
 from datetime import datetime
 from bson import ObjectId
-
+from typing import List
+from app.core.dependencies import admin_required
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -44,3 +45,15 @@ def login_user(user: UserLogin):
 
     token = create_access_token({"sub": str(db_user["_id"]), "role": db_user["role"]})
     return {"access_token": token, "token_type": "bearer"}
+
+@router.get("/", response_model=list[UserResponse], dependencies=[Depends(admin_required)])
+def get_all_users():
+    """Fetch all registered users (Admin only)"""
+    users = []
+    for user in users_collection.find():
+        user["id"] = str(user["_id"])
+        del user["_id"]
+        if "password" in user:
+            del user["password"]  
+        users.append(user)
+    return users

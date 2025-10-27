@@ -34,7 +34,7 @@ class ProductCreate(ProductBase):
     pass
 
 class ProductResponse(ProductBase):
-    id:str
+    _id:str
     created_at:datetime
 
     class Config:
