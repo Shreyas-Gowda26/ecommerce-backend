@@ -29,13 +29,16 @@ def list_products():
         products.append(data)
     return products
 
-@router.get("/{product_id}",response_model=ProductResponse)
-def get_product(product_id:str):
-    product = products_collection.find_one({"_id":ObjectId(product_id)})
-    if not product:
-        raise HTTPException(status_code=404,detail="Product not found")
-    product["_id"]=str(product["_id"])
-    return product
+@router.get("/", response_model=List[ProductResponse])
+def list_products():
+    products = []
+    for item in products_collection.find():
+        item["id"] = str(item["_id"])  # rename _id → id
+        del item["_id"]
+        products.append(item)
+    return products
+
+
 
 @router.put("/{product_id}",response_model=ProductResponse,dependencies=[Depends(admin_required)])
 def update_product(product_id:str,product:ProductCreate):
